@@ -1,20 +1,35 @@
 const express = require('express');
 const http = require('http');
+const path = require('path');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
+
+// Configuración para producción
+const isProduction = process.env.NODE_ENV === 'production';
+const allowedOrigins = isProduction
+  ? [process.env.CLIENT_URL || '*']
+  : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     methods: ["GET", "POST"]
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: allowedOrigins
+}));
 app.use(express.json());
+
+// Servir frontend en producción
+if (isProduction) {
+  app.use(express.static(path.join(__dirname, '../../client/dist')));
+}
 
 // Almacenamiento en memoria (en producción usar base de datos)
 const presentations = new Map();
@@ -314,7 +329,15 @@ io.on('connection', (socket) => {
   });
 });
 
+// Catch-all para SPA en producción
+if (isProduction) {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+  });
+}
+
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Servidor Mentimeter Clone corriendo en puerto ${PORT}`);
+  console.log(`Modo: ${isProduction ? 'PRODUCCIÓN' : 'DESARROLLO'}`);
 });

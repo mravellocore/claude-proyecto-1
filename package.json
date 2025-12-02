@@ -7,11 +7,16 @@
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
-    "build": "cd client && npm run build"
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "postinstall": "cd server && npm install && cd ../client && npm install && npm run build"
   },
   "keywords": ["mentimeter", "presentations", "interactive", "polls", "realtime"],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
