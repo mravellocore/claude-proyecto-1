@@ -1,51 +1,23 @@
-export type SlideType = 'poll' | 'wordcloud' | 'quiz' | 'qa' | 'open';
+export type Player = 'red' | 'black';
 
-export interface Slide {
-  id: string;
-  type: SlideType;
-  question: string;
-  options: string[];
-  responses: Response[];
-  createdAt: string;
+export interface Piece {
+  player: Player;
+  isKing: boolean;
 }
 
-export interface Response {
-  odium: string;
-  participantName: string;
-  answer: string;
-  timestamp: string;
+export type Cell = Piece | null;
+
+export type Board = Cell[][];
+
+export interface Position {
+  row: number;
+  col: number;
 }
 
-export interface Presentation {
-  id: string;
-  title: string;
-  accessCode: string;
-  slides: Slide[];
-  currentSlide: number;
-  createdAt: string;
-  isActive: boolean;
+export interface Move {
+  from: Position;
+  to: Position;
+  captured?: Position;
 }
 
-export interface PollResults {
-  type: 'poll' | 'quiz';
-  question: string;
-  options: string[];
-  results: Record<string, number>;
-  totalResponses: number;
-}
-
-export interface WordCloudResults {
-  type: 'wordcloud';
-  question: string;
-  words: { text: string; count: number }[];
-  totalResponses: number;
-}
-
-export interface QAResults {
-  type: 'qa' | 'open';
-  question: string;
-  answers: { answer: string; timestamp: string }[];
-  totalResponses: number;
-}
-
-export type SlideResults = PollResults | WordCloudResults | QAResults;
+export type GameStatus = 'playing' | 'red-wins' | 'black-wins' | 'draw';
